@@ -8,7 +8,7 @@ import os,re
 from optparse import OptionParser
 
 from MNTriggerStudies.MNTriggerAna.GetDatasetInfo import getTreeFilesAndNormalizations
-
+import imp
 
 def main():
 
@@ -27,11 +27,9 @@ def main():
         sys.exit(0)
 
     sample= args[0]
-    filename = treeFilesAndNormalizations[sample]["files"][0]
+    fname = treeFilesAndNormalizations[sample]["files"][0]
 
-    
-    rootfile = ROOT.TFile(filename, "read")
-
+    rootfile = ROOT.TFile.Open(fname,"r")
     todo = [(rootfile, 0), ]
     for t in todo:
         indent = t[1]
