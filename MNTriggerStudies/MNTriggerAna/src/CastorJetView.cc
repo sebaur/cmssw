@@ -33,6 +33,7 @@ EventViewBase(iConfig,  tree)
     m_vtxNdof= iConfig.getParameter<int>("vtxNdof");
     m_minTrackjetPt = iConfig.getParameter<double>("minTrackjetPt");
     m_maxTrackjetEta = iConfig.getParameter<double>("maxTrackjetEta");
+    m_minCastorJetEnergy = iConfig.getParameter<double("minCastorJetEnergy");
 }
 
 
@@ -80,7 +81,7 @@ void CastorJetView::fillSpecific(const edm::Event& iEvent, const edm::EventSetup
       edm::RefToBase<reco::BasicJet> jetRef = jetsIn->refAt(idx);
       reco::CastorJetID const & jetId = (*jetIdMap)[jetRef];
 
-      if (basicjet.energy()>=500) {
+      if (basicjet.energy()>=m_minCastorJetEnergy) {
          tmf::CustomCastorJet jetCandidate;
          jetCandidate.energy = basicjet.energy();
          addToFVec("energy", basicjet.energy());

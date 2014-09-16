@@ -88,7 +88,7 @@ class DrawCSA14Plots(DrawPlots):
         return retName
 
     def applyScale(self, histoName, sampleName): # override
-        return True
+        return False
 
     def setGlobalStyle(self):  # override
         MNTriggerStudies.MNTriggerAna.Style.setStyle()
@@ -101,6 +101,7 @@ class DrawCSA14Plots(DrawPlots):
         nspl = name.split("_")
         if len(nspl) > 0:
             dataHisto.GetXaxis().SetTitle(nspl[0])
+        dataHisto.GetYaxis().SetTitle("Fraction of events [%]")
 
         #MChistos = MCStack.GetHists()
         legend = ROOT.TLegend(0.3,0.95,1,1)
@@ -146,7 +147,7 @@ if __name__ == "__main__":
     parser.add_option("-o", "--outdir", action="store", type="string",  dest="outdir" )
     (options, args) = parser.parse_args()
 
-    infile = "plotsCSA14_dndeta.root"
+    infile = "plotsJetsAna.root" #"plotsCSA14_dndeta.root"
     if options.infile:
         infile = options.infile
 

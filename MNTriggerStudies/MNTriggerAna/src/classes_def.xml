@@ -3,6 +3,8 @@
     <class name="edm::LumiReWeighting"/> 
     <class name="tmf::TestTrackData"/>
     <class name="std::vector<tmf::TestTrackData>"/>
+    <class name="tmf::CustomCastorJet"/>
+    <class name="std::vector<tmf::CustomCastorJet>"/>
 
 </lcgdict>
 

@@ -8,6 +8,7 @@
 #define constexpr static const
 #include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 #include "MNTriggerStudies/MNTriggerAna/interface/TestTrackData.h"
+#include "MNTriggerStudies/MNTriggerAna/interface/CustomCastorJet.h"
 
 
 namespace {
@@ -17,6 +18,9 @@ namespace {
 
     tmf::TestTrackData v3;
     std::vector<tmf::TestTrackData> v4;
+
+    tmf::CustomCastorJet v5;
+    std::vector<tmf::CustomCastorJet> v6;
 
   };
 }

@@ -18,7 +18,7 @@ class CastorJetView: public EventViewBase {
       int m_vtxNdof;
       double m_minTrackjetPt;
       double m_maxTrackjetEta;
-
+      double m_minCastorJetEnergy;
 };
 
 #endif

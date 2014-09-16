@@ -8,6 +8,8 @@ process.options.allowUnscheduled = cms.untracked.bool(True)
 process.load("PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff")
 process.load("PhysicsTools.PatAlgos.selectionLayer1.selectedPatCandidates_cff")
 
+process.load('RecoLocalCalo.Castor.Castor_cff')
+
 from PhysicsTools.PatAlgos.tools.metTools import addMETCollection
 addMETCollection(process, labelName='patMETCalo', metSource='met')
 addMETCollection(process, labelName='patMETPF', metSource='pfType1CorrectedMet')
@@ -114,38 +116,25 @@ process.source.fileNames = [
 
 import MNTriggerStudies.MNTriggerAna.customizePAT
 process = MNTriggerStudies.MNTriggerAna.customizePAT.customize(process)
-process.exampleTree = cms.EDAnalyzer("ExampleTreeProducer")
-process = MNTriggerStudies.MNTriggerAna.customizePAT.addTreeProducer(process, process.exampleTree)
-process.tracksTree = cms.EDAnalyzer("TracksTreeProducer",
+#process.exampleTree = cms.EDAnalyzer("ExampleTreeProducer")
+#process = MNTriggerStudies.MNTriggerAna.customizePAT.addTreeProducer(process, process.exampleTree)
+process.jetsTree = cms.EDAnalyzer("CastorJetTreeProducer",
     EventData = cms.PSet(),
-    GenTrackView = cms.PSet(
-        branchPrefix = cms.untracked.string("genTracks"),
-        maxEta = cms.double(7.), 
-        charge = cms.int32(1), 
-        minPt = cms.double(0.2),
-        genTracks = cms.InputTag("genParticles")
+    CastorJetView  = cms.PSet(
+      vtxZ = cms.double(15.0),
+      vtxNdof = cms.int32(4),
+      vtxRho = cms.double(2.0),
+      minTrackjetPt = cms.double(1.),
+      maxTrackjetEta = cms.double(2.),
+      minCastorJetEnergy = cms.double(500.)
     ),
-    RecoTrackView  = cms.PSet(
-        branchPrefix = cms.untracked.string("recoTracks"),
-        maxEta = cms.double(5.),
-        #maxDZ  = cms.double(0.2),
-        maxDZ  = cms.double(999),
-        minPt = cms.double(-1),
-        tracks = cms.InputTag("generalTracks")
-    ),
-
-    VerticesView = cms.PSet(
-        branchPrefix = cms.untracked.string("vtx"),
-        src  = cms.InputTag("offlinePrimaryVertices")
-    )
-
-
-
 
 )
 
+process = MNTriggerStudies.MNTriggerAna.customizePAT.addTreeProducer(process, process.ak7BasicJets)
+process = MNTriggerStudies.MNTriggerAna.customizePAT.addTreeProducer(process, process.ak7CastorJetID)
 
-process = MNTriggerStudies.MNTriggerAna.customizePAT.addTreeProducer(process, process.tracksTree)
+process = MNTriggerStudies.MNTriggerAna.customizePAT.addTreeProducer(process, process.jetsTree)
 process = MNTriggerStudies.MNTriggerAna.customizePAT.removeEdmOutput(process)
 
 #process.pexampleTree = cms.Path(process.exampleTree)

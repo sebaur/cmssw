@@ -11,7 +11,7 @@ def setStyle():
    tdrStyle.SetCanvasBorderMode(0)
    tdrStyle.SetCanvasColor(kWhite)
    tdrStyle.SetCanvasDefH(600) #Height of canvas
-   tdrStyle.SetCanvasDefW(600) #Width of canvas
+   tdrStyle.SetCanvasDefW(800) #Width of canvas
    tdrStyle.SetCanvasDefX(0)   #POsition on screen
    tdrStyle.SetCanvasDefY(0)
 
@@ -129,7 +129,7 @@ def setStyle():
 
    # Change for log plots:
    tdrStyle.SetOptLogx(0)
-   tdrStyle.SetOptLogy(0)
+   tdrStyle.SetOptLogy(1)
    tdrStyle.SetOptLogz(0)
    # Postscript options:
    #tdrStyle.SetPaperSize(20.,20.)
