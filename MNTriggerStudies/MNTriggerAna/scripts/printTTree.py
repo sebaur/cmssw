@@ -27,9 +27,12 @@ def main():
         sys.exit(0)
 
     sample= args[0]
-    fname = treeFilesAndNormalizations[sample]["files"][0]
+    filename = treeFilesAndNormalizations[sample]["files"][0]
 
-    rootfile = ROOT.TFile.Open(fname,"r")
+    
+    rootfile = ROOT.TFile.Open(filename, "read")
+
+
     todo = [(rootfile, 0), ]
     for t in todo:
         indent = t[1]

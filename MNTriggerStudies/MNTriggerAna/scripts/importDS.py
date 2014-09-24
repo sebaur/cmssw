@@ -1,17 +1,81 @@
 #! /usr/bin/env python
 
-import os, sys
+import os, sys, subprocess
 
 import ROOT
 ROOT.gROOT.SetBatch(True)
 from ROOT import *
 
 import pprint
+import MNTriggerStudies.MNTriggerAna.Util
 
 try:
     from elementtree import ElementTree
 except:
     from xml.etree.ElementTree import ElementTree 
+
+def getSEDirsCrab3(anaVersion, name):
+    # from runCrab3Jobs.py:
+    # pycfgextra.append("config.General.workArea='"+anaVersion+"'")
+    # pycfgextra.append("config.General.requestName='"+name+"'")
+    for taskDir in os.listdir(anaVersion):
+        if name in taskDir: break
+    else:
+        raise Exception("Cannot find crab3 dir for "+anaVersion+" "+ name)
+
+    taskDir = os.path.join(anaVersion, taskDir)
+    output = subprocess.check_output(["crab", "getoutput", "--dump", taskDir])
+    SEDirs = set()
+    for l in output.splitlines():
+        filename = l.split("/")[-1]
+        if not filename.startswith("trees_"): continue
+        if not filename.endswith(".root"): continue
+        SEDirs.add(l.replace(filename,""))
+
+    return SEDirs
+
+def getSEDirsCrab2(anaVersion, name):
+    crabDirName = anaVersion+"_"+name # crab dir naming from runCrabJobs.py
+    crabResDir = crabDirName + "/res/"
+    SEDirs = set()
+    for  r,d,f in os.walk(crabResDir):
+        for file in f:
+            if not file.endswith(".xml"): continue
+            if not file.startswith("crab_fjr_"): continue
+            if "Submission_" in r: continue
+            crabFjr = r+"/"+file
+            fp = open(crabFjr,"r")
+            try:
+                et = ElementTree()
+            except:
+                et = ElementTree
+            mydoc = et.parse(fp)
+            pfnDir=None
+            for e in mydoc.findall('./File/PFN'):
+                if pfnDir != None:
+                    print "Allready have a pfn in", crabFjr
+                else:
+                    pfnDir = e.text.strip()
+                
+                #print pfnDir
+            for e in mydoc.findall('./AnalysisFile/PFN'):
+                #print type(e)
+                #print dir(e)
+                #print e.tag, e.attrib
+                #print  "XXXX", e.text.strip()
+                if pfnDir != None:
+                    print "Allready have a pfn in", crabFjr
+                else:
+                    pfnDir = e.attrib["Value"]
+            if pfnDir:
+                fileName = pfnDir.split("/")[-1]
+                pfnDir = pfnDir.replace(fileName,"")
+                SEDirs.add(pfnDir)
+
+            if len(SEDirs) > 0: # makes consistency checks above useless, but it;s to long to parse all xml files
+                break
+
+    return SEDirs
 
 
 def main(sam):
@@ -37,49 +101,13 @@ def main(sam):
             if value != None:
                 sam[name][f] = value
 
-        #crabDirName = "DiJet_20140214_METFwd-Run2010B-Apr21ReReco-v1"
-        #print "Warning - devel name of crab dir"
-        #  name=anaVersion+"_"+s
-        crabDirName = anaVersion+"_"+name # crab dir naming from runCrabJobs.py
-        crabResDir = crabDirName + "/res/"
-
-        SEDirs = set()
-        for  r,d,f in os.walk(crabResDir):
-            for file in f:
-                if not file.endswith(".xml"): continue
-                if not file.startswith("crab_fjr_"): continue
-                if "Submission_" in r: continue
-                crabFjr = r+"/"+file
-                fp = open(crabFjr,"r")
-                try:
-                    et = ElementTree()
-                except:
-                    et = ElementTree
-                mydoc = et.parse(fp)
-                pfnDir=None
-                for e in mydoc.findall('./File/PFN'):
-                    if pfnDir != None:
-                        print "Allready have a pfn in", crabFjr
-                    else:
-                        pfnDir = e.text.strip()
-                    
-                    #print pfnDir
-                for e in mydoc.findall('./AnalysisFile/PFN'):
-                    #print type(e)
-                    #print dir(e)
-                    #print e.tag, e.attrib
-                    #print  "XXXX", e.text.strip()
-                    if pfnDir != None:
-                        print "Allready have a pfn in", crabFjr
-                    else:
-                        pfnDir = e.attrib["Value"]
-                if pfnDir:
-                    fileName = pfnDir.split("/")[-1]
-                    pfnDir = pfnDir.replace(fileName,"")
-                    SEDirs.add(pfnDir)
-
-                if len(SEDirs) > 0: # makes consistency checks above useless, but it;s to long to parse all xml files
-                    break
+        crabVersion = MNTriggerStudies.MNTriggerAna.Util.getCrabVersion()
+        if crabVersion == 2:
+            SEDirs = getSEDirsCrab2(anaVersion, name)
+        elif crabVersion == 3:
+            SEDirs = getSEDirsCrab3(anaVersion, name)
+        else:
+            raise Exception("Unexpected crab version: "+str(crabVersion))
 
         SEDir = None
         if len(SEDirs)!=1: 
