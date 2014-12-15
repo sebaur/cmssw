@@ -18,20 +18,22 @@ def getSEDirsCrab3(anaVersion, name):
     # from runCrab3Jobs.py:
     # pycfgextra.append("config.General.workArea='"+anaVersion+"'")
     # pycfgextra.append("config.General.requestName='"+name+"'")
+    #return ""
     for taskDir in os.listdir(anaVersion):
         if name in taskDir: break
     else:
         raise Exception("Cannot find crab3 dir for "+anaVersion+" "+ name)
 
     taskDir = os.path.join(anaVersion, taskDir)
-    output = subprocess.check_output(["crab", "getoutput", "--dump", taskDir])
+    o = subprocess.Popen(["crab getoutput --dump " + taskDir],shell=True, stdout=subprocess.PIPE)
+    output, _ = o.communicate()
     SEDirs = set()
+
     for l in output.splitlines():
         filename = l.split("/")[-1]
         if not filename.startswith("trees_"): continue
         if not filename.endswith(".root"): continue
         SEDirs.add(l.replace(filename,""))
-
     return SEDirs
 
 def getSEDirsCrab2(anaVersion, name):

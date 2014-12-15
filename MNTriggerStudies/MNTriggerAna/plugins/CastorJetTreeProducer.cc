@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Package:    TracksTreeProducer
-// Class:      TracksTreeProducer
+// Package:    CastorJetTreeProducer
+// Class:      CastorJetTreeProducer
 // 
-/**\class TracksTreeProducer TracksTreeProducer.cc MNTriggerStudies/TracksTreeProducer/plugins/TracksTreeProducer.cc
+/**\classCastorJetTreeProducer CastorJetTreeProducer.cc MNTriggerStudies/CastorJetTreeProducer/plugins/CastorJetTreeProducer.cc
 
  Description: [one line class summary]
 
@@ -11,8 +11,8 @@
      [Notes on implementation]
 */
 //
-// Original Author:  Tomasz Fruboes
-//         Created:  Thu, 17 Apr 2014 16:06:29 GMT
+// Original Author:  Sebastian Baur
+//         Created:  
 // $Id$
 //
 //
@@ -43,6 +43,8 @@
 #include "MNTriggerStudies/MNTriggerAna/interface/GenTrackView.h"
 #include "MNTriggerStudies/MNTriggerAna/interface/RecoTrackView.h"
 #include "MNTriggerStudies/MNTriggerAna/interface/CastorJetView.h"
+#include "MNTriggerStudies/MNTriggerAna/interface/GenJetView.h"
+#include "MNTriggerStudies/MNTriggerAna/interface/PFJetView.h"
 
 //
 // class declaration
@@ -90,6 +92,8 @@ CastorJetTreeProducer::CastorJetTreeProducer(const edm::ParameterSet& iConfig)
     m_tree = tFileService->make<TTree>("data", "data");
     m_views.push_back(new EventIdData(iConfig.getParameter< edm::ParameterSet >("EventData"), m_tree));
     m_views.push_back(new CastorJetView(iConfig.getParameter< edm::ParameterSet >("CastorJetView"), m_tree));
+    m_views.push_back(new GenJetView(iConfig.getParameter< edm::ParameterSet >("GenJetView"), m_tree));
+    m_views.push_back(new PFJetView(iConfig.getParameter< edm::ParameterSet >("PFJetView"), m_tree));
 }
 
 CastorJetTreeProducer::~CastorJetTreeProducer() {}

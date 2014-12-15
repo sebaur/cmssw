@@ -129,7 +129,7 @@ def setStyle():
 
    # Change for log plots:
    tdrStyle.SetOptLogx(0)
-   tdrStyle.SetOptLogy(1)
+   tdrStyle.SetOptLogy(0)
    tdrStyle.SetOptLogz(0)
    # Postscript options:
    #tdrStyle.SetPaperSize(20.,20.)

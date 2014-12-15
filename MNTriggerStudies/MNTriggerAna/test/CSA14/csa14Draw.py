@@ -101,7 +101,7 @@ class DrawCSA14Plots(DrawPlots):
         nspl = name.split("_")
         if len(nspl) > 0:
             dataHisto.GetXaxis().SetTitle(nspl[0])
-        dataHisto.GetYaxis().SetTitle("Fraction of events [%]")
+        dataHisto.GetYaxis().SetTitle("mean energy [GeV]")
 
         #MChistos = MCStack.GetHists()
         legend = ROOT.TLegend(0.3,0.95,1,1)

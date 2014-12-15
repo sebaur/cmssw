@@ -1,4 +1,4 @@
-anaType="CSA14_Tracks"
+anaType="CSA14"
 
 # root path needs proper XXX
 preamble='''

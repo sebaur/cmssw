@@ -8,6 +8,9 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "MNTriggerStudies/MNTriggerAna/interface/CustomCastorJet.h"
+#include "DataFormats/HcalRecHit/interface/CastorRecHit.h"
+#include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
+
 
 CastorJetView::CastorJetView(const edm::ParameterSet& iConfig, TTree * tree):
 EventViewBase(iConfig,  tree)
@@ -17,7 +20,7 @@ EventViewBase(iConfig,  tree)
 //    m_CastorJetData[getPrefix()+"CastorJet"] = std::vector<tmf::CustomCastorJet>();
 //    tree->Branch((getPrefix()+"CastorJet").c_str(), "std::vector< tmf::CustomCastorJet >", &m_CastorJetData[getPrefix()+"CastorJet"]);
 
-   // second version: standard types - don't know how to include towers...
+   // second version: standard types - don't know how to include towers properly...
    registerVecFloat("energy", tree);
    registerVecFloat("phi", tree);
    registerVecFloat("eta", tree);
@@ -27,13 +30,15 @@ EventViewBase(iConfig,  tree)
    registerVecFloat("towersPhi", tree);
    registerVecFloat("towersEnergy", tree);
 
+   registerVecFloat("RecHitEnergy", tree);
+
     // fetch config data
     m_vtxZ = iConfig.getParameter<double>("vtxZ");
     m_vtxRho= iConfig.getParameter<double>("vtxRho");
     m_vtxNdof= iConfig.getParameter<int>("vtxNdof");
     m_minTrackjetPt = iConfig.getParameter<double>("minTrackjetPt");
     m_maxTrackjetEta = iConfig.getParameter<double>("maxTrackjetEta");
-    m_minCastorJetEnergy = iConfig.getParameter<double("minCastorJetEnergy");
+    m_minCastorJetEnergy = iConfig.getParameter<double>("minCastorJetEnergy");
 }
 
 
@@ -41,6 +46,9 @@ void CastorJetView::fillSpecific(const edm::Event& iEvent, const edm::EventSetup
 
    edm::Handle<std::vector<reco::CastorTower> > castorTowers;
    iEvent.getByLabel("CastorTowerReco",castorTowers);  
+
+   edm::Handle< edm::SortedCollection<CastorRecHit,edm::StrictWeakOrdering<CastorRecHit> > > castorRecHits;
+   iEvent.getByLabel("castorreco",castorRecHits);  
 
    edm::Handle<edm::View<reco::BasicJet> > jetsIn;
    iEvent.getByLabel("ak7BasicJets", jetsIn);
@@ -82,24 +90,19 @@ void CastorJetView::fillSpecific(const edm::Event& iEvent, const edm::EventSetup
       reco::CastorJetID const & jetId = (*jetIdMap)[jetRef];
 
       if (basicjet.energy()>=m_minCastorJetEnergy) {
-         tmf::CustomCastorJet jetCandidate;
-         jetCandidate.energy = basicjet.energy();
          addToFVec("energy", basicjet.energy());
-         jetCandidate.pt = basicjet.pt();
          addToFVec("pt", basicjet.pt());
-         jetCandidate.phi = basicjet.phi();
          addToFVec("phi", basicjet.phi());
-         jetCandidate.eta = basicjet.eta();
          addToFVec("eta", basicjet.eta());
-         jetCandidate.nTowers = jetId.nTowers;
          addToIVec("nTowers", jetId.nTowers);
          for (unsigned int iTow=0; iTow < castorTowers->size(); ++iTow) {
-            jetCandidate.towersPhi.push_back(castorTowers->at(iTow).phi());
             addToFVec("towersPhi", castorTowers->at(iTow).phi());
-            jetCandidate.towersEnergy.push_back(castorTowers->at(iTow).energy());
             addToFVec("towersEnergy", castorTowers->at(iTow).energy());
          }
-//         m_CastorJetData[getPrefix()+"CastorJet"].push_back(jetCandidate);
+         for (unsigned int iRecHit=0; iRecHit < castorRecHits->size(); ++iRecHit) {
+            CastorRecHit rh = (*castorRecHits)[iRecHit];
+            addToFVec("RecHitEnergy", rh.energy());
+         }
       }
     }
 
