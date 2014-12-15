@@ -208,7 +208,41 @@ class ExampleProofReader( ROOT.TPySelector ):
         else:
             return self.normalizationFactor
 
+    def checkUnderOverFlow(self):
+        print "Checking for possible under - and overflow problems in your histograms..."
+        olist = self.GetOutputList()
+        problems = False
+        for o in olist:
+            if not "TH1" in o.ClassName(): continue
+            grandeTotale =  o.GetBinContent(o.GetNbinsX()+1)+ o.GetBinContent(0)+o.Integral()
+            if grandeTotale == 0: continue
+            if o.GetBinContent(o.GetNbinsX()+1) != 0:
+                print "!!WARNING!! histogram", o.GetName(), "has overflow ==> fraction of events in overflow bin:", \
+                    (o.GetBinContent(o.GetNbinsX()+1)/grandeTotale)*100, "%"
+                problems = True
+            if o.GetBinContent(0) != 0:
+                print "!!WARNING!! histogram", o.GetName(), "has underflow ==> fraction of events in underflow bin:", \
+                    (o.GetBinContent(0)/grandeTotale)*100, "%"
+                problems = True
+
+        if not problems: print "everything is fine!"
+
     def Terminate( self ): # executed once on client
+
+        try:
+            self.checkUnderOverFlow()
+        except:
+            print ""
+            print ""
+            print "Exception catched in checkUnderOverFlow function. Traceback:"
+            print ""
+            traceback.print_exc(file=sys.stdout)
+            print ""
+            print ""
+            print ""
+            sys.stdout.flush()
+            raise Exception("Whooopps!")
+
         try:
             self.finalizeWhenMerged()
         except:
@@ -241,7 +275,7 @@ class ExampleProofReader( ROOT.TPySelector ):
     @classmethod
     def runAll(cls, treeName, outFile, sampleList = None, \
                 maxFilesMC=None, maxFilesData=None, \
-                slaveParameters = None, nWorkers=None):
+                slaveParameters = None, nWorkers=None, usePickle=False):
 
 
         if slaveParameters == None: # When default param is used reset contents on every call to runAll
@@ -249,7 +283,7 @@ class ExampleProofReader( ROOT.TPySelector ):
 
         cwd = os.getcwd()+"/"
         treeFilesAndNormalizations = getTreeFilesAndNormalizations(maxFilesMC=maxFilesMC, 
-                                maxFilesData=maxFilesData)
+                                maxFilesData=maxFilesData, samplesToProcess=sampleList, usePickle=usePickle)
 
         if sampleList == None:
             todo = treeFilesAndNormalizations.keys() # run them all
@@ -283,7 +317,7 @@ class ExampleProofReader( ROOT.TPySelector ):
 
             dataset = ROOT.TDSet( 'TTree', 'data', treeName) # the last name is the directory name inside the root file
             for file in treeFilesAndNormalizations[t]["files"]:
-		dataset.Add(file)
+                dataset.Add(file)
             
             slaveParameters["datasetName"] = t
             slaveParameters["isData"] = sampleListFullInfo[t]["isData"]

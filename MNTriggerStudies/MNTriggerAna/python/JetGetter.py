@@ -28,6 +28,10 @@ class Jet():
     def looseId(self):
         return self.jetID
 
+    def jetid(self):
+        return self.jetID
+
+
     def genP4(self):
         return self.p4vecGen
 
@@ -58,12 +62,8 @@ class Jet():
 class JetGetter:
     def __init__(self, jType):
 
-        if jType == "PF":
-            # idea store gen-rec as float
-            self.jetcol = "PFnewjets"
-            self.jetcolID = "PFnewjetid"
-            self.jetcolGen ="PFnewgenjets"
-        elif jType == "PFAK4CHS":
+        # idea store gen-rec as float
+        if jType == "PFAK4CHS":
             self.jetcol = "PFAK4CHSnewjets"
             self.jetcolID = "PFAK4CHSnewjetid"
             self.jetcolGen ="PFAK4CHSnewgenjets"
@@ -71,6 +71,22 @@ class JetGetter:
             self.jetcol = "PFAK5CHSnewjets"
             self.jetcolID = "PFAK5CHSnewjetid"
             self.jetcolGen ="PFAK5CHSnewgenjets"
+        elif jType == "PFAK5":
+            self.jetcol = "PFAK5newjets"
+            self.jetcolID = "PFAK5newjetid"
+            self.jetcolGen ="PFAK5newgenjets"
+        elif jType == "PFlegacy":
+            self.jetcol = "PFnewjets"
+            self.jetcolID = "PFnewjetid"
+            self.jetcolGen ="PFnewgenjets"
+            '''
+            pref = "PFAK5new"
+            self.jetcol = pref+"jets"
+            self.jetcolID = pref+"jetid"
+            self.jetcolGen = pref+"genjets"
+            #'''
+
+
         elif jType == "Calo":
             raise Exception("Jet collection not known "+jType)
             self.setJERScenario("Calo10")

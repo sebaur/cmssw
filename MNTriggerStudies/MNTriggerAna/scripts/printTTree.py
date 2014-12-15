@@ -8,7 +8,7 @@ import os,re
 from optparse import OptionParser
 
 from MNTriggerStudies.MNTriggerAna.GetDatasetInfo import getTreeFilesAndNormalizations
-import imp
+from MNTriggerStudies.MNTriggerAna.Util import getAnaDefinition
 
 def main():
 
@@ -18,15 +18,23 @@ def main():
     #parser.add_option("-s", "--sample",   action="store", type="string", dest="sample", help="sample name" )
     #parser.add_option("-l", "--listSamples",   action="store", type="string", dest="list", help="listAllSamples" )
     (options, args) = parser.parse_args()
-    treeFilesAndNormalizations = getTreeFilesAndNormalizations(maxFilesMC=1, maxFilesData=1, quiet = True)
-    if len(args) != 1 or args[0] not in treeFilesAndNormalizations:
+
+    anaDef = getAnaDefinition("sam")
+    if len(args) != 1 or args[0] not in anaDef:
         print "Usage: printTTree.py sampleName"
         print "Avaliable samples:"
-        for t in treeFilesAndNormalizations:
+        for t in anaDef:
             print " ", t
         sys.exit(0)
 
     sample= args[0]
+    treeFilesAndNormalizations = getTreeFilesAndNormalizations(maxFilesMC=1, maxFilesData=1,
+                quiet = True, samplesToProcess=[sample,])
+
+    if not treeFilesAndNormalizations[sample]["files"]:
+        print "No files found for sample", sample, "- exiting"
+        sys.exit(0)
+
     filename = treeFilesAndNormalizations[sample]["files"][0]
 
     
