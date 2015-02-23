@@ -1,4 +1,3 @@
-/MinBias_TuneMonash13_13TeV-pythia8/Spring14dr-castor_NoPileUp_POSTLS170_V6-v1/AODSIM
 /MinBias_TuneCUETP8S1-HERAPDF_13TeV-pythia8/Spring14dr-castor_NoPileUp_POSTLS170_V6-v1/AODSIM
-/MinBias_TuneA2MB_13TeV_pythia8/Spring14dr-castor_PU_S14_POSTLS170_V6-v1/AODSIM
-/MinBias_TuneZ2star_13TeV_pythia6/Spring14dr-castor_PU_S14_POSTLS170_V6-v1/AODSIM
+/QCD_Pt-15to30_Tune4C_13TeV_pythia8/Fall13dr-castor_tsg_PU1bx50_POSTLS162_V1-v1/AODSIM
+/QCD_Pt-30to50_Tune4C_13TeV_pythia8/Fall13dr-castor_tsg_PU1bx50_POSTLS162_V1-v1/AODSIM

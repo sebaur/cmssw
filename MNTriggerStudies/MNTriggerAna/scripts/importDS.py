@@ -18,7 +18,7 @@ def getSEDirsCrab3(anaVersion, name):
     # from runCrab3Jobs.py:
     # pycfgextra.append("config.General.workArea='"+anaVersion+"'")
     # pycfgextra.append("config.General.requestName='"+name+"'")
-    #return ""
+    return ""
     for taskDir in os.listdir(anaVersion):
         if name in taskDir: break
     else:

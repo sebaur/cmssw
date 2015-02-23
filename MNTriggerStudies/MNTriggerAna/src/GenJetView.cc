@@ -6,10 +6,10 @@ GenJetView::GenJetView(const edm::ParameterSet& iConfig, TTree * tree):
 EventViewBase(iConfig,  tree)
 {
 
-   //registerVecFloat("ak5genEnergy", tree);
-   //registerVecFloat("ak5genPhi", tree);
-   //registerVecFloat("ak5genEta", tree);
-   //registerVecFloat("ak5genPt", tree);
+   registerVecFloat("ak5genEnergy", tree);
+   registerVecFloat("ak5genPhi", tree);
+   registerVecFloat("ak5genEta", tree);
+   registerVecFloat("ak5genPt", tree);
 
    registerVecFloat("ak7genEnergy", tree);
    registerVecFloat("ak7genPhi", tree);
@@ -46,7 +46,7 @@ void GenJetView::fillSpecific(const edm::Event& iEvent, const edm::EventSetup& i
       }
     }
 
-/*
+
    edm::Handle<edm::View<reco::GenJet> > ak5JetsIn;
    iEvent.getByLabel("ak5GenJets", ak5JetsIn);
     for (edm::View<reco::GenJet>::const_iterator ibegin = ak5JetsIn->begin(), iend = ak5JetsIn->end(), ijet = ibegin; ijet != iend; ++ijet) 
@@ -63,7 +63,7 @@ void GenJetView::fillSpecific(const edm::Event& iEvent, const edm::EventSetup& i
       }
     }
 
-
+/*
    edm::Handle<edm::View<reco::GenJet> > ak8JetsIn;
    iEvent.getByLabel("ak8GenJets", ak8JetsIn);
     for (edm::View<reco::GenJet>::const_iterator ibegin = ak8JetsIn->begin(), iend = ak8JetsIn->end(), ijet = ibegin; ijet != iend; ++ijet) 
@@ -80,4 +80,5 @@ void GenJetView::fillSpecific(const edm::Event& iEvent, const edm::EventSetup& i
       }
     }
 */
+
 }

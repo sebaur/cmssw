@@ -159,6 +159,69 @@ from RecoJets.JetProducers.ak5PFJets_cfi import ak5PFJets
 process.ak7PFJets = ak5PFJets.clone(jetPtMin = 1.0, rParam = 0.7 )
 process.ak7PFJets.doAreaFastjet = True
 
+# CASTOR JET RECO
+import FWCore.ParameterSet.Config as cms
+from RecoJets.JetProducers.AnomalousCellParameters_cfi import *
+
+process.ak5BasicJets = cms.EDProducer(
+    "FastjetJetProducer",
+    AnomalousCellParameters,
+    src            = cms.InputTag('CastorTowerReco'),
+    srcPVs         = cms.InputTag('offlinePrimaryVertices'),
+    jetType        = cms.string('BasicJet'),
+    # minimum jet pt
+    jetPtMin       = cms.double(0.0),
+    # minimum calo tower input et
+    inputEtMin     = cms.double(0.0),
+    # minimum calo tower input energy
+    inputEMin      = cms.double(0.0),
+    # primary vertex correction
+    doPVCorrection = cms.bool(True),
+    # pileup with offset correction
+    doPUOffsetCorr = cms.bool(False),
+       # if pileup is false, these are not read:
+       nSigmaPU = cms.double(1.0),
+       radiusPU = cms.double(0.5),  
+    # fastjet-style pileup 
+    doAreaFastjet    = cms.bool(False),
+    doRhoFastjet     = cms.bool(False),
+       # if doPU is false, these are not read:
+       Active_Area_Repeats = cms.int32(1),
+       GhostArea = cms.double(0.01),
+       Ghost_EtaMax = cms.double(5.0),
+    jetAlgorithm = cms.string("AntiKt"),
+    rParam       = cms.double(0.5)
+    )
+
+process.ak7BasicJets = cms.EDProducer(
+    "FastjetJetProducer",
+    AnomalousCellParameters,
+    src            = cms.InputTag('CastorTowerReco'),
+    srcPVs         = cms.InputTag('offlinePrimaryVertices'),
+    jetType        = cms.string('BasicJet'),
+    # minimum jet pt
+    jetPtMin       = cms.double(0.0),
+    # minimum calo tower input et
+    inputEtMin     = cms.double(0.0),
+    # minimum calo tower input energy
+    inputEMin      = cms.double(0.0),
+    # primary vertex correction
+    doPVCorrection = cms.bool(True),
+    # pileup with offset correction
+    doPUOffsetCorr = cms.bool(False),
+       # if pileup is false, these are not read:
+       nSigmaPU = cms.double(1.0),
+       radiusPU = cms.double(0.5),  
+    # fastjet-style pileup 
+    doAreaFastjet    = cms.bool(False),
+    doRhoFastjet     = cms.bool(False),
+       # if doPU is false, these are not read:
+       Active_Area_Repeats = cms.int32(1),
+       GhostArea = cms.double(0.01),
+       Ghost_EtaMax = cms.double(5.0),
+    jetAlgorithm = cms.string("AntiKt"),
+    rParam       = cms.double(0.7)
+    )
 
 import MNTriggerStudies.MNTriggerAna.customizePAT
 process = MNTriggerStudies.MNTriggerAna.customizePAT.customize(process)
@@ -177,23 +240,24 @@ process.jetsTree = cms.EDAnalyzer("CastorJetTreeProducer",
     GenJetView  = cms.PSet(
       maxGenJetEta = cms.double(7),
       minGenJetEta = cms.double(-7),
-      minGenJetEnergy = cms.double(100.)
+      minGenJetEnergy = cms.double(1.)
     ),
     PFJetView  = cms.PSet(
       maxPFJetEta = cms.double(5.2),
       minPFJetEta = cms.double(-5.2),
-      minPFJetEnergy = cms.double(100.)
+      minPFJetEnergy = cms.double(1.)
     ),
-
 )
+
+
 
 process = MNTriggerStudies.MNTriggerAna.customizePAT.addTreeProducer(process, process.genParticlesForJets)
 process = MNTriggerStudies.MNTriggerAna.customizePAT.addTreeProducer(process, process.ak7GenJets)
-
 #process = MNTriggerStudies.MNTriggerAna.customizePAT.addTreeProducer(process, process.ak7PFJets)
 
+process = MNTriggerStudies.MNTriggerAna.customizePAT.addTreeProducer(process, process.ak5BasicJets)
 process = MNTriggerStudies.MNTriggerAna.customizePAT.addTreeProducer(process, process.ak7BasicJets)
-process = MNTriggerStudies.MNTriggerAna.customizePAT.addTreeProducer(process, process.ak7CastorJetID)
+#process = MNTriggerStudies.MNTriggerAna.customizePAT.addTreeProducer(process, process.ak7CastorJetID)
 
 process = MNTriggerStudies.MNTriggerAna.customizePAT.addTreeProducer(process, process.jetsTree)
 process = MNTriggerStudies.MNTriggerAna.customizePAT.removeEdmOutput(process)
