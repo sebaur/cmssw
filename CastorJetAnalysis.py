@@ -1,3 +1,3 @@
-ROOTPrefix=""
-TTreeBasePATH="/afs/cern.ch/work/s/sbaur/CastorJetsRun2/CMSSW_7_3_5/src/data/"
-PATbasePATH="/afs/cern.ch/work/s/sbaur/CastorJetsRun2/CMSSW_7_3_5/src/data/"
+PATbasePATH="/pnfs/desy.de/cms/tier2/"
+TTreeBasePATH="/pnfs/desy.de/cms/tier2/"
+ROOTPrefix="root://xrootd.ba.infn.it/"

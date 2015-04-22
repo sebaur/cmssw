@@ -15,11 +15,10 @@ class CastorJetsAnalyzer(CommonFSQFramework.Core.ExampleProofReader.ExampleProof
 
         # -----------------------------------------
         # define histograms here
-
-        self.hist["ak5CastorJetEnergySpectrum"] = ROOT.TH1D("ak5CastorJetEnergySpectrum"+p,"ak5CastorJetEnergySpectrum",100,0,3500)
-        self.hist["ak5CastorGenJetEnergySpectrum"] = ROOT.TH1D("ak5CastorGenJetEnergySpectrum"+p,"ak5CastorGenJetEnergySpectrum",100,0,3500)
-
-        self.hist["CastorJetTrigger"] = ROOT.TH1D("CastorJetTrigger","CastorJetTrigger",2,-0.5,1.5)
+        
+        self.hist = {}
+        self.hist["ak5CastorJetEnergySpectrum"] = ROOT.TH1D("ak5CastorJetEnergySpectrum","ak5CastorJetEnergySpectrum",100,0,3500)
+        self.hist["ak5CastorGenJetEnergySpectrum"] = ROOT.TH1D("ak5CastorGenJetEnergySpectrum","ak5CastorGenJetEnergySpectrum",100,0,3500)
 
         # -----------------------------------------       
 
@@ -47,20 +46,6 @@ class CastorJetsAnalyzer(CommonFSQFramework.Core.ExampleProofReader.ExampleProof
         for i in xrange(0,self.fChain.ak5GenJets.size()):
             if self.fChain.ak5GenJets.at(i).energy() > minCastorEnergy and self.fChain.ak5GenJets.at(i).eta() > -6.6 and self.fChain.ak5GenJets.at(i).eta() < -5.2 :
                 self.hist["ak5CastorGenJetEnergySpectrum"].Fill(self.fChain.ak5GenJets.at(i).energy())
-
-        # Check for CASTOR jet trigger
-        towerThreshold = 1000.
-        CastorJetTrigger = False
-        self.hist["NTowers"].Fill(self.fChain.TowersEnergy.size())
-        for i in xrange(0,self.fChain.TowersEnergy.size()):
-            self.hist["TowerEnergySpectrum"].Fill(self.fChain.TowersEnergy.at(i))
-            if self.fChain.TowersEnergy.at(i) > towerThreshold:
-                CastorJetTrigger = True
-
-        if CastorJetTrigger:
-            self.hist["CastorJetTrigger"].Fill(1)
-        else:
-            self.hist["CastorJetTrigger"].Fill(0)
 
         # get energy leading jets in CASTOR
         ak5CastorIndex = -1
@@ -93,10 +78,10 @@ class CastorJetsAnalyzer(CommonFSQFramework.Core.ExampleProofReader.ExampleProof
 
     def finalize(self):
         print "Finalize:"
-        normFactor = self.getNormalizationFactor()
-        print "  applying norm", normFactor
-        for h in self.hist:
-            self.hist[h].Scale(normFactor)
+        #normFactor = self.getNormalizationFactor()
+        #print "  applying norm", normFactor
+        #for h in self.hist:
+        #    self.hist[h].Scale(normFactor)
 
 if __name__ == "__main__":
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
@@ -112,10 +97,9 @@ if __name__ == "__main__":
     # Run printTTree.py alone to get the samples list
     #sampleList = []
     #sampleList.append("QCD_Pt-15to3000_TuneZ2star_Flat_HFshowerLibrary_7TeV_pythia6")
-    #maxFilesMC = 1
-    #maxFilesData = 1
-    #maxFilesData = 1
-    #nWorkers = 1
+    maxFilesMC = 1
+    maxFilesData = 1
+    nWorkers = 8
 
 
     slaveParams = {}
