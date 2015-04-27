@@ -1,3 +1,3 @@
 ROOTPrefix=""
-TTreeBasePATH="/nfs/dust/cms/user/fruboest/2015.01.MN/data/"
-PATbasePATH="/pnfs/desy.de/cms/tier2/"
+TTreeBasePATH="/afs/cern.ch/work/s/sbaur/public/data/"
+PATbasePATH="/afs/cern.ch/work/s/sbaur/public/data/"
