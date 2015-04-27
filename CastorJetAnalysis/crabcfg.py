@@ -7,7 +7,7 @@ config.General.workArea = 'crab_projects'
 
 config.section_("JobType")
 config.JobType.pluginName = 'Analysis'
-config.JobType.psetName = 'S0_makePAT_70.py'
+config.JobType.psetName = 'makeCastorJetTrees.py'
 #config.JobType.psetName = 'S0_nonPAT_70.py'
 
 config.section_("Data")
