@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import MNTriggerStudies.MNTriggerAna.ExampleProofReader
+import CommonFSQFramework.Core.ExampleProofReader
 
 import sys, os, time,  math
 sys.path.append(os.path.dirname(__file__))
@@ -10,7 +10,9 @@ from ROOT import edm, JetCorrectionUncertainty, TMath
 
 from array import *
 
-class zProfile(MNTriggerStudies.MNTriggerAna.ExampleProofReader.ExampleProofReader):
+import numpy as np
+
+class zProfile(CommonFSQFramework.Core.ExampleProofReader.ExampleProofReader):
     def init( self):
 
         self.hist = {}
@@ -40,77 +42,39 @@ class zProfile(MNTriggerStudies.MNTriggerAna.ExampleProofReader.ExampleProofRead
         # GET LEADING GEN-JET
         ak5CastorGenIndex = -1
         ak5CastorGenEnergy = 0
-        ak5CastorGenIndex2 = -1
-        ak5CastorGenEnergy2 = 0
         for i in xrange(0, self.fChain.ak5GenJetsp4.size()):
             if self.fChain.ak5GenJetsp4.at(i).energy() > ak5CastorGenEnergy and self.fChain.ak5GenJetsp4.at(i).eta() < maxEta_GenJet and self.fChain.ak5GenJetsp4.at(i).eta > minEta_GenJet :
                 ak5CastorGenIndex = i
                 ak5CastorGenEnergy = self.fChain.ak5GenJetsp4.at(i).energy()
-        for i in xrange(0, self.fChain.ak5GenJetsp4.size()):
-            if self.fChain.ak5GenJetsp4.at(i).energy() > ak5CastorGenEnergy2 and self.fChain.ak5GenJetsp4.at(i).eta() < maxEta_GenJet and self.fChain.ak5GenJetsp4.at(i).eta > minEta_GenJet and i != ak5CastorGenIndex:
-                ak5CastorGenIndex2 = i
-                ak5CastorGenEnergy2 = self.fChain.ak5GenJetsp4.at(i).energy()
-
-        
-        ###### Fill Histograms ################################
-
+       
         #get hottest sector
-        SectorMap = [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]
-
+        RecHitMap = np.ones((14,16)) # mod|sec
         for i in xrange(0,self.fChain.CastorRecHitEnergy.size()):
-            SectorMap[(i/14)] = SectorMap[(i/14)] + self.fChain.CastorRecHitEnergy.at(i);
+            RecHitMap[i%14][i/14] = self.fChain.CastorRecHitEnergy.at(i)
+        SectorEnergies = np.sum(RecHitMap, axis=0)
+        hottestSector = -1
+        hottestSector = np.argmax(SectorEnergies)
 
-        iSector = -1
-        dE = 100.
-        for i in xrange(0,len(SectorMap)):
-            if SectorMap[i] > dE:
-                dE= SectorMap[i]
-                iSector = i
-
-        if iSector != -1 and ak5CastorGenEnergy > 480 and ak5CastorGenEnergy < 520 and ak5CastorGenIndex2 == -1 :
-            energyMap = [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]
-
-            for i in xrange(0,self.fChain.CastorRecHitEnergy.size()):
-                if i/14 == iSector: energyMap[(i % 14)] = energyMap[(i % 14)] + self.fChain.CastorRecHitEnergy.at(i)
-
+        ###### Fill Histograms ################################
+        if hottestSector != -1 and ak5CastorGenEnergy > 480 and ak5CastorGenEnergy < 520:
             for i in xrange(0,14):
-                self.hist["meanZProfile_500"].Fill(i+1,energyMap[i])
+                self.hist["meanZProfile_500"].Fill(i+1,RecHitMap[i][hottestSector])
 
-        if iSector != -1 and  ak5CastorGenEnergy > 980 and ak5CastorGenEnergy < 1020 and ak5CastorGenIndex2 == -1 :
-            energyMap = [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]
-
-            for i in xrange(0,self.fChain.CastorRecHit.size()):
-                if i/14 == iSector: energyMap[(i % 14)] = energyMap[(i % 14)] + self.fChain.CastorRecHitEnergy.at(i)
-
+        elif hottestSector != -1 and  ak5CastorGenEnergy > 980 and ak5CastorGenEnergy < 1020:
             for i in xrange(0,14):
-                self.hist["meanZProfile_1000"].Fill(i+1,energyMap[i])
+                self.hist["meanZProfile_1000"].Fill(i+1,RecHitMap[i][hottestSector])
 
-        if iSector != -1 and  ak5CastorGenEnergy > 1980 and ak5CastorGenEnergy < 2020 and ak5CastorGenIndex2 == -1 :
-            energyMap = [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]
-
-            for i in xrange(0,self.fChain.CastorRecHitEnergy.size()):
-                if i/14 == iSector: energyMap[(i % 14)] = energyMap[(i % 14)] + self.fChain.CastorRecHitEnergy.at(i)
-
+        elif hottestSector != -1 and  ak5CastorGenEnergy > 1980 and ak5CastorGenEnergy < 2020:
             for i in xrange(0,14):
-                self.hist["meanZProfile_2000"].Fill(i+1,energyMap[i])
+                self.hist["meanZProfile_2000"].Fill(i+1,RecHitMap[i][hottestSector])
 
-        if iSector != -1 and  ak5CastorGenEnergy > 2480 and ak5CastorGenEnergy < 2520 and ak5CastorGenIndex2 == -1 :
-            energyMap = [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]
-
-            for i in xrange(0,self.fChain.CastorRecHitEnergy.size()):
-                if i/14 == iSector: energyMap[(i % 14)] = energyMap[(i % 14)] + self.fChain.CastorRecHitEnergy.at(i)
-
+        elif hottestSector != -1 and  ak5CastorGenEnergy > 2480 and ak5CastorGenEnergy < 2520:
             for i in xrange(0,14):
-                self.hist["meanZProfile_2500"].Fill(i+1,energyMap[i])
+                self.hist["meanZProfile_2500"].Fill(i+1,RecHitMap[i][hottestSector])
 
-        if iSector != -1 and  ak5CastorGenEnergy > 2980 and ak5CastorGenEnergy < 3020 and ak5CastorGenIndex2 == -1 :
-            energyMap = [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]
-
-            for i in xrange(0,self.fChain.CastorRecHitEnergy.size()):
-                if i/14 == iSector: energyMap[(i % 14)] = energyMap[(i % 14)] + self.fChain.CastorRecHitEnergy.at(i)
-
+        elif hottestSector != -1 and  ak5CastorGenEnergy > 2980 and ak5CastorGenEnergy < 3020:
             for i in xrange(0,14):
-                self.hist["meanZProfile_3000"].Fill(i+1,energyMap[i])
+                self.hist["meanZProfile_3000"].Fill(i+1,RecHitMap[i][hottestSector])
 
         return 0
 
@@ -145,6 +109,7 @@ if __name__ == "__main__":
     # Run printTTree.py alone to get the samples list
     sampleList = []
     sampleList.append("QCD_Pt-15to30_Tune4C_13TeV_pythia8")
+    sampleList.append("QCD_Pt-15to30_Tune4C_13TeV_pythia8_noSat")
     #maxFilesMC = 1
     #maxFilesData = 1
     nWorkers = 12
@@ -161,6 +126,3 @@ if __name__ == "__main__":
                                maxFilesData = maxFilesData,
                                nWorkers=nWorkers,
                                outFile = "plotszProfile.root" )
-
-
-
